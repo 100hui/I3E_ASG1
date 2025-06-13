@@ -92,29 +92,43 @@ public class PlayerBehaviour : MonoBehaviour
     {
         if (currentCoin != null)
         {
-            Debug.Log("Interacting with coin");
             currentCoin.Collect(this);
         }
         else if (currentKey != null)
         {
-            Debug.Log("Interacting with key");
             currentKey.Collect(this);
-            hasKey = true; // Set the player to have the key
+            hasKey = true;
         }
         else if (currentDoor != null)
         {
-            if (hasKey)
+            // DEBUG: see in Console what door we're hitting and what its requirement is
+            Debug.Log($"Door \"{currentDoor.gameObject.name}\" requires {currentDoor.requiredScore} points; you have {score}");
+
+            // If this door is score-gated...
+            if (currentDoor.requiredScore > 0)
             {
-                Debug.Log("Interacting with door");
-                currentDoor.Interact();
+                if (score < currentDoor.requiredScore)
+                {
+                    StartCoroutine(DisplayHint(
+                        $"You need {currentDoor.requiredScore} scores to open the door"));
+                    return;    // <— important, stops here if you don't have enough
+                }
             }
+            // Otherwise it's key-gated
             else
             {
-                Debug.Log("You need a key to open this door.");
-                StartCoroutine(DisplayHint("You need a key to open this door."));
+                if (!hasKey)
+                {
+                    StartCoroutine(DisplayHint("You need a key to open this door."));
+                    return;    // <— important, stops here if you don't have the key
+                }
             }
+
+            // If we got this far, either (score ≥ requiredScore) or (hasKey)
+            currentDoor.Interact();
         }
     }
+
 
 
 

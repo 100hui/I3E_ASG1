@@ -2,6 +2,9 @@ using UnityEngine;
 
 public class DoorBehaviour : MonoBehaviour
 {
+    [Tooltip("If > 0, player needs this many points instead of a key to open the door.")]
+    public int requiredScore = 0; // If > 0, player needs this many points instead of a key to open the door.
+
     bool isOpen = false;
     float closedAngleY;
 
