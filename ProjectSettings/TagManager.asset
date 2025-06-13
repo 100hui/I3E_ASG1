@@ -9,6 +9,8 @@ TagManager:
   - Door
   - Water
   - Room2Start
+  - Monster
+  - Projectile
   layers:
   - Default
   - TransparentFX

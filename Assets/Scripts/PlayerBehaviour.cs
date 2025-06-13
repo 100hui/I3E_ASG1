@@ -7,9 +7,12 @@ public class PlayerBehaviour : MonoBehaviour
     int score = 0;
     bool canInteract = false;
     bool hasKey = false;
+    bool hasGun = false;
     CoinBehaviour currentCoin;
     DoorBehaviour currentDoor;
     KeyBehaviour currentKey;
+    GunBehaviour currentGun;
+    CrystalBehaviour currentCrystal;
 
     [SerializeField]
     GameObject projectile;
@@ -18,7 +21,7 @@ public class PlayerBehaviour : MonoBehaviour
     Transform spawnPoint;
 
     [SerializeField]
-    Transform room2StartPoint; 
+    Transform room2StartPoint;
 
     [SerializeField]
     float interactionDistance = 5f;
@@ -56,6 +59,8 @@ public class PlayerBehaviour : MonoBehaviour
 
         currentKey = null;
         currentDoor = null;
+        currentGun = null;
+        currentCrystal = null;
 
         if (Physics.Raycast(spawnPoint.position, spawnPoint.forward, out hitInfo, interactionDistance))
         {
@@ -78,6 +83,22 @@ public class PlayerBehaviour : MonoBehaviour
                     canInteract = true;
                     interactionText.text = "Press 'E' to collect the key"; // Show interaction text for key
                 }
+
+                GunBehaviour gun = hitObject.GetComponentInParent<GunBehaviour>();
+                if (gun != null)
+                {
+                    currentGun = gun;
+                    canInteract = true;
+                    interactionText.text = "Press 'E' to collect the gun"; // Show interaction text for gun
+                }
+
+                CrystalBehaviour crystal = hitObject.GetComponent<CrystalBehaviour>();
+                if (crystal != null)
+                {
+                    canInteract = true;
+                    interactionText.text = "Press 'E' to collect the crystal"; // Show interaction text for crystal
+                    currentCrystal = crystal;
+                }
             }
             else if (hitObject.CompareTag("Door"))
             {
@@ -87,6 +108,17 @@ public class PlayerBehaviour : MonoBehaviour
                     canInteract = true;
                     interactionText.text = "Press 'E' to open the door"; // Show interaction text for door
                 }
+            }
+        }
+        if (hasGun && Input.GetKeyDown(KeyCode.F))
+        {
+            var shot = Instantiate(projectile, spawnPoint.position, spawnPoint.rotation);
+            var rb = shot.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.useGravity = true;
+                float shootSpeed = 20f;
+                rb.linearVelocity = spawnPoint.forward * shootSpeed;
             }
         }
     }
@@ -102,6 +134,16 @@ public class PlayerBehaviour : MonoBehaviour
         {
             currentKey.Collect(this);
             hasKey = true;
+        }
+        else if (currentGun != null)
+        {
+            currentGun.Collect(this);
+            hasGun = true;
+            StartCoroutine(DisplayHint("Press 'F' to shoot the monster"));
+        }
+        else if (currentCrystal != null)
+        {
+            currentCrystal.Collect(this);
         }
         else if (currentDoor != null)
         {
@@ -219,5 +261,10 @@ public class PlayerBehaviour : MonoBehaviour
         hintText.text = message;
         yield return new WaitForSeconds(2f); // Display the hint for 2 seconds
         hintText.text = ""; // Clear the hint text
+    }
+    
+    public void Win()
+    {
+        StartCoroutine(DisplayHint("You win!"));
     }
 }
