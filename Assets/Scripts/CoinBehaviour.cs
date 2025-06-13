@@ -8,6 +8,9 @@ public class CoinBehaviour : MonoBehaviour
     float rotationSpeed = 100f; 
 
     [SerializeField]
+    private AudioClip collectSound;
+
+    [SerializeField]
     Material highlightMat;
     Material originalMat;
     public int coinValue = 10;
@@ -31,6 +34,7 @@ public class CoinBehaviour : MonoBehaviour
     public void Collect(PlayerBehaviour player)
     {
         player.ModifyScore(coinValue);
+        AudioSource.PlayClipAtPoint(collectSound, transform.position, 1f);
         Destroy(gameObject);
     }
     void Update()

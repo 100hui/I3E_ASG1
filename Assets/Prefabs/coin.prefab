@@ -121,5 +121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 586ea2d5513f821409263596261b3a0f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rotationSpeed: 100
+  collectSound: {fileID: 8300000, guid: a77f8429549db3047bfcfbd65019df8f, type: 3}
   highlightMat: {fileID: 2100000, guid: 60632203f2eec9545bbde2b7030e458c, type: 2}
   coinValue: 10
