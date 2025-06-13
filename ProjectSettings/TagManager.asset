@@ -7,6 +7,8 @@ TagManager:
   - CinemachineTarget
   - Collectable
   - Door
+  - Water
+  - Room2Start
   layers:
   - Default
   - TransparentFX

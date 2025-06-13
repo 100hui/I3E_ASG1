@@ -1,5 +1,6 @@
 using UnityEngine;
 using TMPro;
+using System.Collections;
 
 public class PlayerBehaviour : MonoBehaviour
 {
@@ -15,6 +16,9 @@ public class PlayerBehaviour : MonoBehaviour
 
     [SerializeField]
     Transform spawnPoint;
+
+    [SerializeField]
+    Transform room2StartPoint; 
 
     [SerializeField]
     float interactionDistance = 5f;
@@ -135,14 +139,25 @@ public class PlayerBehaviour : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         Debug.Log(other.gameObject.name);
+
+        // 1) Water death → start delayed respawn
+        if (other.CompareTag("Water"))
+        {
+            StartCoroutine(DeathAndRespawn());
+            return;  // skip the rest this frame
+        }
+        if (other.CompareTag("Room2Start"))
+        {
+            StartCoroutine(DisplayHint("Be careful—if you fall into the water, you'll die"));
+        }
+        // 2) Auto‐collect coins
         if (other.CompareTag("Collectable"))
         {
             currentCoin = other.GetComponent<CoinBehaviour>();
             if (currentCoin != null)
-            {
-                currentCoin.Collect(this); // Auto collect the coin
-            }
+                currentCoin.Collect(this);
         }
+        // 3) Door interaction
         else if (other.CompareTag("Door"))
         {
             canInteract = true;
@@ -150,6 +165,34 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    private IEnumerator DeathAndRespawn()
+    {
+        // Show “You died” for 2 seconds
+        yield return DisplayHint("You died");
+
+        // Then teleport back to Room 2 start
+        var cc = GetComponent<CharacterController>();
+        if (cc != null)
+        {
+            cc.enabled = false;
+            transform.position = room2StartPoint.position;
+            cc.enabled = true;
+        }
+        else
+        {
+            var rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.position = room2StartPoint.position;
+            }
+            else
+            {
+                transform.position = room2StartPoint.position;
+            }
+        }
+    }
 
     public void ModifyScore(int amount)
     {
