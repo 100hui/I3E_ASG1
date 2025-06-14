@@ -1,14 +1,39 @@
+/*
+* Author: Geng Baihui
+* Date: 2025-06-14
+* Description: Controls player movement, interaction (coins, doors, gas, etc.),
+*              shooting, and respawn mechanics across the three rooms.
+*/
+
 using UnityEngine;
 using TMPro;
 using System.Collections;
 
+/// <summary>
+/// Manages player input, UI, hints, and physics-based interactions. 
+/// </summary>
 public class PlayerBehaviour : MonoBehaviour
 {
+    /// <summary>
+    /// Player's current score, increases by 10 per coin collected. 
+    /// </summary>
     int score = 0;
+
+    /// <summary>
+    /// Whether theplayer is currently able to interact with objects.
+    /// </summary>
     bool canInteract = false;
+
+    /// <summary>
+    ///  Whether the player has collected a key, gun, or mask.
+    /// </summary>
     bool hasKey = false;
     bool hasGun = false;
     bool hasMask = false;
+
+    /// <summary>
+    /// Reference to the current interactable objects in the scene.
+    /// </summary>
     CoinBehaviour currentCoin;
     DoorBehaviour currentDoor;
     KeyBehaviour currentKey;
@@ -16,30 +41,57 @@ public class PlayerBehaviour : MonoBehaviour
     CrystalBehaviour currentCrystal;
     MaskBehaviour currentMask;
 
+    /// <summary>
+    /// Projectile prefab to instantiate when shooting. 
+    /// </summary>
     [SerializeField]
     GameObject projectile;
 
+    /// <summary>
+    ///  Transform representing the spawn point for projectiles and raycasts.
+    /// </summary>
     [SerializeField]
     Transform spawnPoint;
 
+    /// <summary>
+    /// Transform for the respawn location in Room 2.
+    /// </summary>
     [SerializeField]
     Transform room2StartPoint;
 
+    /// <summary>
+    /// Transform for the respawn location in Room 3.
+    /// </summary>
     [SerializeField]
     Transform room3StartPoint;
 
+    /// <summary>
+    /// Maximum distance for interaction raycasts.
+    /// </summary>
     [SerializeField]
     float interactionDistance = 5f;
 
+    /// <summary>
+    /// UI text element displaying the player's score.
+    /// </summary>
     [SerializeField]
     TextMeshProUGUI scoreText;
 
+    /// <summary>
+    /// UI text element displaying interaction instructions.
+    /// </summary>
     [SerializeField]
     TextMeshProUGUI interactionText;
 
+    /// <summary>
+    /// UI text element for temporary hints and messages.
+    /// </summary>
     [SerializeField]
     TextMeshProUGUI hintText;
 
+    /// <summary>
+    /// Initialization: set initial UI and show starting hints.
+    /// </summary>
     void Start()
     {
         scoreText.text = "Score: " + score.ToString();
@@ -49,6 +101,9 @@ public class PlayerBehaviour : MonoBehaviour
         StartCoroutine(InitialHint());
     }
 
+    /// <summary>
+    /// Main update loop: handle raycast interactions and shooting input. 
+    /// </summary>
     void Update()
     {
         RaycastHit hitInfo;
@@ -144,7 +199,9 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-
+    /// <summary>
+    ///  Handles player interaction with objects when the 'E' key is pressed.
+    /// </summary>
     void OnInteract()
     {
         if (currentCoin != null)
@@ -202,9 +259,9 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
-
-
-
+    /// <summary>
+    /// Trigger enter logic for gas, water death, Room2 hints, and collisions.
+    /// </summary>
     void OnTriggerEnter(Collider other)
     {
         Debug.Log(other.gameObject.name);
@@ -222,9 +279,9 @@ public class PlayerBehaviour : MonoBehaviour
             return;  // skip the rest this frame
         }
         if (other.CompareTag("Room2Start"))
-            {
-                StartCoroutine(DisplayHint("Be careful — if you fall into the water, you'll die"));
-            }
+        {
+            StartCoroutine(DisplayHint("Be careful — if you fall into the water, you'll die"));
+        }
         // 2) Auto‐collect coins
         if (other.CompareTag("Collectable"))
         {
@@ -240,6 +297,10 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///  Coroutine to handle player death and respawn in Room 2.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator DeathAndRespawn()
     {
         // Show “You died” for 2 seconds
@@ -269,6 +330,10 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    ///  Coroutine to handle player death in the gas area and respawn in Room 3.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator GasDeathAndRespawn()
     {
         // Show “You died” for 2 seconds
@@ -298,6 +363,10 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Coroutine to display initial hints at the start of the game.
+    /// </summary>
+    /// <returns></returns>
     private IEnumerator InitialHint()
     {
         hintText.text = "Use WASD to move and mouse to look around\n" +
@@ -307,6 +376,10 @@ public class PlayerBehaviour : MonoBehaviour
         hintText.text = ""; // Clear the hint text
     }
 
+    /// <summary>
+    /// Updates the player's score by the given amount.
+    /// </summary>
+    /// <param name="amount"></param>
     public void ModifyScore(int amount)
     {
         score += amount;
@@ -314,6 +387,10 @@ public class PlayerBehaviour : MonoBehaviour
         scoreText.text = "Score: " + score.ToString();
     }
 
+    /// <summary>
+    /// Clears coin highlight when player exits the trigger. 
+    /// </summary>
+    /// <param name="other"></param>
     void OnTriggerExit(Collider other)
     {
         if (currentCoin != null)
@@ -327,13 +404,21 @@ public class PlayerBehaviour : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Displays a hint message onscreen for 2 seconds. 
+    /// </summary>
+    /// <param name="message"></param>
+    /// <returns></returns>
     System.Collections.IEnumerator DisplayHint(string message)
     {
         hintText.text = message;
         yield return new WaitForSeconds(2f); // Display the hint for 2 seconds
         hintText.text = ""; // Clear the hint text
     }
-    
+
+    /// <summary>
+    /// Displays the win message when player collects the crystal. 
+    /// </summary>
     public void Win()
     {
         StartCoroutine(DisplayHint("You win!"));
