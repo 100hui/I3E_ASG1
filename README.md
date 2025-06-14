@@ -7,6 +7,7 @@ Crystal Quest is a small 3D puzzel-adventure built in Unity. The player navigate
 + Room 3: Collect a gun to defeat a monster and obtain a crystal. A toxic gas barrier blocks the path unless the player first finds a gas mask. 
 Your goal is to collect the crystal in Room 3 and win the game. 
 
+
 ## Installation & Running
 ### Platforms & Requirements
 - Unity Version: Unity 6
@@ -18,11 +19,13 @@ Your goal is to collect the crystal in Room 3 and win the game.
 3. Ensure required packages are installed (Starter Assets FPS)
 4. Open the SampleScene then play
 
+
 ## Controls
 - Move: W/A/S/D
 * Look: Mouse move
 + Interact(collect/use): E
 - Fire: F
+
 
 ## Puzzel Solutions
 - Room 1: The key is on a raised platform near the eastern wall. Push the wooden boxes to create a makeshift staircase so you can jump onto the platforms and collect the key. 
@@ -32,9 +35,11 @@ Your goal is to collect the crystal in Room 3 and win the game.
     2.  Pick the gun up to shoot the monster. 
     3. Shoot the monster once to transform it into the crystal, then collect the crystal to win. 
 
+
 ## Known Issues & Limitations
 - **Frame Drops**: On lower-end GPUs, there might be occasional stutter. 
 * **No Audio Options**: Background music and SFX volume cannot be adjusted in-game. 
+
 
 ## Refrences & Credits
 ### Models ([Unity Asset Store](https://assetstore.unity.com/) / [Sketchfab](https://sketchfab.com/feed))
@@ -49,6 +54,6 @@ Your goal is to collect the crystal in Room 3 and win the game.
 * Sound Effects: [Chiptone SFX by sfbgames](https://sfbgames.itch.io/chiptone)
 ### Tutorial & Learning Resources
 - Unity Audio taught by tutorials:
-    - ["How To Add Sound Effects the RIGHT Way" (Youtube) by Sasquatch B Studios](https://youtu.be/DU7cgVsU2rM?si=kakQ7uPQpxyELghL)
-    * ["How to add BACKGROUND MUSIC in Unity that AUTOMATICALLY PLAYS on start" (Youtube) by GDT Solutions](https://youtu.be/hiA_qRiNgfg?si=HFLaVlwD4lbz0G-u)
+    - "How To Add Sound Effects the RIGHT Way"[ (Youtube)](https://youtu.be/DU7cgVsU2rM?si=kakQ7uPQpxyELghL) by Sasquatch B Studios
+    * "How to add BACKGROUND MUSIC in Unity that AUTOMATICALLY PLAYS on start" [(Youtube)](https://youtu.be/hiA_qRiNgfg?si=HFLaVlwD4lbz0G-u) by GDT Solutions
     + Coin rotation logic adapted assistance from [ChatGPT](https://chatgpt.com/)
