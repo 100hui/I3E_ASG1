@@ -56,4 +56,4 @@ Your goal is to collect the crystal in Room 3 and win the game.
 - Unity Audio taught by tutorials:
     - "How To Add Sound Effects the RIGHT Way"[ (Youtube)](https://youtu.be/DU7cgVsU2rM?si=kakQ7uPQpxyELghL) by Sasquatch B Studios
     * "How to add BACKGROUND MUSIC in Unity that AUTOMATICALLY PLAYS on start" [(Youtube)](https://youtu.be/hiA_qRiNgfg?si=HFLaVlwD4lbz0G-u) by GDT Solutions
-    + Coin rotation logic adapted assistance from [ChatGPT](https://chatgpt.com/)
++ Coin rotation logic adapted assistance from [ChatGPT](https://chatgpt.com/)
