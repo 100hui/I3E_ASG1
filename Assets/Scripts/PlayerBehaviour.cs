@@ -8,11 +8,13 @@ public class PlayerBehaviour : MonoBehaviour
     bool canInteract = false;
     bool hasKey = false;
     bool hasGun = false;
+    bool hasMask = false;
     CoinBehaviour currentCoin;
     DoorBehaviour currentDoor;
     KeyBehaviour currentKey;
     GunBehaviour currentGun;
     CrystalBehaviour currentCrystal;
+    MaskBehaviour currentMask;
 
     [SerializeField]
     GameObject projectile;
@@ -22,6 +24,9 @@ public class PlayerBehaviour : MonoBehaviour
 
     [SerializeField]
     Transform room2StartPoint;
+
+    [SerializeField]
+    Transform room3StartPoint;
 
     [SerializeField]
     float interactionDistance = 5f;
@@ -40,6 +45,8 @@ public class PlayerBehaviour : MonoBehaviour
         scoreText.text = "Score: " + score.ToString();
         interactionText.text = "";
         hintText.text = "";
+
+        StartCoroutine(InitialHint());
     }
 
     void Update()
@@ -61,10 +68,16 @@ public class PlayerBehaviour : MonoBehaviour
         currentDoor = null;
         currentGun = null;
         currentCrystal = null;
+        currentMask = null;
 
         if (Physics.Raycast(spawnPoint.position, spawnPoint.forward, out hitInfo, interactionDistance))
         {
             GameObject hitObject = hitInfo.collider.gameObject;
+
+            if (hitObject.CompareTag("Gas") && !hasMask)
+            {
+                StartCoroutine(DisplayHint("Dangerous! You need a mask to go through the toxic gas area"));
+            }
 
             if (hitObject.CompareTag("Collectable"))
             {
@@ -90,6 +103,14 @@ public class PlayerBehaviour : MonoBehaviour
                     currentGun = gun;
                     canInteract = true;
                     interactionText.text = "Press 'E' to collect the gun"; // Show interaction text for gun
+                }
+
+                MaskBehaviour mask = hitObject.GetComponentInParent<MaskBehaviour>();
+                if (mask != null)
+                {
+                    currentMask = mask;
+                    canInteract = true;
+                    interactionText.text = "Press 'E' to collect the mask"; // Show interaction text for mask
                 }
 
                 CrystalBehaviour crystal = hitObject.GetComponent<CrystalBehaviour>();
@@ -141,6 +162,12 @@ public class PlayerBehaviour : MonoBehaviour
             hasGun = true;
             StartCoroutine(DisplayHint("Press 'F' to shoot the monster"));
         }
+        else if (currentMask != null)
+        {
+            currentMask.Collect(this);
+            hasMask = true;
+            StartCoroutine(DisplayHint("You can now go through the toxic gas area"));
+        }
         else if (currentCrystal != null)
         {
             currentCrystal.Collect(this);
@@ -182,6 +209,12 @@ public class PlayerBehaviour : MonoBehaviour
     {
         Debug.Log(other.gameObject.name);
 
+        if (other.CompareTag("Gas") && !hasMask)
+        {
+            StartCoroutine(GasDeathAndRespawn());
+            return;  // skip the rest this frame
+        }
+
         // 1) Water death → start delayed respawn
         if (other.CompareTag("Water"))
         {
@@ -189,9 +222,9 @@ public class PlayerBehaviour : MonoBehaviour
             return;  // skip the rest this frame
         }
         if (other.CompareTag("Room2Start"))
-        {
-            StartCoroutine(DisplayHint("Be careful—if you fall into the water, you'll die"));
-        }
+            {
+                StartCoroutine(DisplayHint("Be careful — if you fall into the water, you'll die"));
+            }
         // 2) Auto‐collect coins
         if (other.CompareTag("Collectable"))
         {
@@ -234,6 +267,44 @@ public class PlayerBehaviour : MonoBehaviour
                 transform.position = room2StartPoint.position;
             }
         }
+    }
+
+    private IEnumerator GasDeathAndRespawn()
+    {
+        // Show “You died” for 2 seconds
+        yield return DisplayHint("You died");
+
+        // Teleport back to Room 3 start
+        var cc = GetComponent<CharacterController>();
+        if (cc != null)
+        {
+            cc.enabled = false;
+            transform.position = room3StartPoint.position;
+            cc.enabled = true;
+        }
+        else
+        {
+            var rb = GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.linearVelocity = Vector3.zero;
+                rb.angularVelocity = Vector3.zero;
+                rb.position = room3StartPoint.position;
+            }
+            else
+            {
+                transform.position = room3StartPoint.position;
+            }
+        }
+    }
+
+    private IEnumerator InitialHint()
+    {
+        hintText.text = "Use WASD to move and mouse to look around\n" +
+                        "Collect coins to increase your score\n" +
+                        "Find the crystal to win the game";
+        yield return new WaitForSeconds(5f); // Display the hint for 5 seconds
+        hintText.text = ""; // Clear the hint text
     }
 
     public void ModifyScore(int amount)

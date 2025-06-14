@@ -11,6 +11,8 @@ TagManager:
   - Room2Start
   - Monster
   - Projectile
+  - Gas
+  - Room3Start
   layers:
   - Default
   - TransparentFX
